@@ -1,6 +1,7 @@
 import requests
 import re
 import random
+import os
 
 
 twitter_main_url = 'https://twitter.com/'  # to get guest token
@@ -15,11 +16,22 @@ authorization_headers = {
 }
 
 
-# load proxies from proxies.txt file
-# you have to place it on root folder of this project
-with open('proxies.txt', 'r') as f:
-    content = f.readlines()
-PROXIES = [x.strip() for x in content]
+USE_PROXY = False
+PROXIES_FILE_PATH_OR_URL = os.getenv('PROXIES_FILE_PATH_OR_URL')
+PROXIES_TYPE = os.getenv('PROXIES_TYPE')
+if PROXIES_FILE_PATH_OR_URL:
+    m = re.search('^http(?:s|)://', PROXIES_FILE_PATH_OR_URL)
+    if m:
+        resp = requests.get(PROXIES_FILE_PATH_OR_URL)
+        content = resp.text
+    else:
+        with open(PROXIES_FILE_PATH_OR_URL, 'r') as f:
+            content = f.readlines()
+
+    PROXIES = [x.strip() for x in content]
+    USE_PROXY = True
+
+
 READ_TIMEOUT = 30
 TRY_COUNTS = 10
 
@@ -33,10 +45,11 @@ def get_new_session():
             session = requests.session()
             session.headers.update(initial_headers)
 
-            # set proxy
-            _proxy = random.choice(PROXIES)
-            _proxy = {'https': 'http://%s' % _proxy}
-            session.proxies = _proxy
+            if USE_PROXY:
+                # set proxy
+                _proxy = random.choice(PROXIES)
+                _proxy = {'https': '%s://%s' % (PROXIES_TYPE, _proxy)}
+                session.proxies = _proxy
 
             # get new guest token
             resp = session.get(twitter_main_url)

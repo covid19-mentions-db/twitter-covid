@@ -52,6 +52,18 @@ spec:
               value: ${MONGODB_PASSWORD}
             - name: MONGODB_AUTH_DB
               value: ${MONGODB_AUTH_DB}
+            - name: PROXIES_FILE_PATH_OR_URL
+              value: ${PROXIES_FILE_PATH_OR_URL}
+            - name: PROXIES_TYPE
+              value: ${PROXIES_TYPE}
+            volumeMounts:
+            - mountPath: ${MOUNT_CONTAINER_PATH}
+              name: proxies_mount
+          volumes:
+          - name: proxies_mount
+            hostPath:
+              path: ${MOUNT_HOST_PATH}
+              type: ""
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -103,3 +115,15 @@ spec:
             value: ${MONGODB_PASSWORD}
           - name: MONGODB_AUTH_DB
             value: ${MONGODB_AUTH_DB}
+          - name: PROXIES_FILE_PATH_OR_URL
+            value: ${PROXIES_FILE_PATH_OR_URL}
+          - name: PROXIES_TYPE
+            value: ${PROXIES_TYPE}
+        volumeMounts:
+        - mountPath: ${MOUNT_CONTAINER_PATH}
+          name: proxies_mount
+      volumes:
+      - name: proxies_mount
+        hostPath:
+          path: ${MOUNT_HOST_PATH}
+          type: ""

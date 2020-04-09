@@ -1,0 +1,33 @@
+stages:
+  - build
+  - deploy
+
+
+# build docker image and push to your registry
+build:
+  image: docker:18.09
+  services:
+    - docker:18.09-dind
+  variables:
+    DOCKER_HOST: tcp://localhost:2375
+  stage: build
+  script:
+    - docker build --tag $DOCKER_REGISTRY/covid-parser:$CI_COMMIT_SHA .
+    - docker push $DOCKER_REGISTRY/covid-parser:$CI_COMMIT_SHA
+
+
+# download kubectl, config and deploy
+deploy:
+  stage: deploy
+  script:
+    - apt-get update && apt-get install curl gettext-base -y
+    - curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.13.9/bin/linux/amd64/kubectl
+    - chmod +x ./kubectl
+    - mv ./kubectl /usr/local/bin/kubectl
+    - kubectl version --client
+    - kubectl config set-cluster k8s --server="${K8S_SERVER}"
+    - kubectl config set clusters.k8s.certificate-authority-data $(echo "${K8S_CERT}")
+    - kubectl config set-credentials gitlab --token="${K8S_TOKEN}"
+    - kubectl config set-context default --cluster=k8s --user=gitlab
+    - kubectl config use-context default
+    - envsubst < deployment.yaml | kubectl apply -f -
