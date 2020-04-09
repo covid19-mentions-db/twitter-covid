@@ -29,7 +29,7 @@ spec:
             - name: RABBITMQ_HOST
               value: ${RABBITMQ_HOST}
             - name: RABBITMQ_PORT
-              value: ${RABBITMQ_PORT}
+              value: '${RABBITMQ_PORT}'
             - name: RABBITMQ_QUEUE
               value: ${RABBITMQ_QUEUE}
             - name: RABBITMQ_USER
@@ -39,7 +39,7 @@ spec:
             - name: MONGODB_HOST
               value: ${MONGODB_HOST}
             - name: MONGODB_PORT
-              value: ${MONGODB_PORT}
+              value: '${MONGODB_PORT}'
             - name: MONGODB_DB
               value: ${MONGODB_DB}
             - name: MONGODB_TASK_COLLECTION
