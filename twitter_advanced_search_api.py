@@ -4,6 +4,7 @@ import dateutil.parser as DP
 from calculate_centroid import calculate_centroid_for_twitter_bounding_box
 
 
+index_langs = ['da', 'nl', 'en', 'fi', 'fr', 'de', 'hu', 'it', 'nb', 'pt', 'ro', 'ru', 'es', 'sv', 'tr']
 advanced_search_api = 'https://api.twitter.com/2/search/adaptive.json'
 session = get_new_session()
 
@@ -93,6 +94,9 @@ def extract_results_from_json(j, query):
                 'images': images,
                 'new': True,
             }
+
+            if tweet['lang'] in index_langs:
+                curr['index_lang'] = tweet['lang']
 
             result_tweets.append(curr)
 
