@@ -62,7 +62,7 @@ def extract_results_from_json(j, query):
                 _location = calculate_centroid_for_twitter_bounding_box(
                     tweet['place']['bounding_box']['coordinates'][0]
                 )
-                location['coordinates'] = [_location[0], _location[1]]
+                location['coordinates'] = [_location[1], _location[0]]
                 location['country'] = tweet['place']['country']
             except:
                 pass
